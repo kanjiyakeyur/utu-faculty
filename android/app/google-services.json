@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "893471951849",
+    "firebase_url": "https://utuconnect.firebaseio.com",
+    "project_id": "utuconnect",
+    "storage_bucket": "utuconnect.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:893471951849:android:6c53564f584d94aa419978",
+        "android_client_info": {
+          "package_name": "com.example.utu_faculty"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "893471951849-nvvtr1slvnaj8kgs6047fse9o525cu59.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD2x-ZdD_IeJ9J3HC0It_YqvpIJqYZezMo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "893471951849-nvvtr1slvnaj8kgs6047fse9o525cu59.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
