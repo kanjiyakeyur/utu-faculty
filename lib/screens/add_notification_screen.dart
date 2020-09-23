@@ -25,6 +25,30 @@ class _AddNotificationScreenState extends State<AddNotificationScreen> {
     'link': '',
   };
 
+  //this for update notification
+  bool _argumentDataFatch = false;
+  DateTime _oldSendDate;
+  String _notificationID;
+  setdata(NotificationType data) {
+    if (_argumentDataFatch == false) {
+      _formData['title'] = data.title;
+      _formData['description'] = data.discription;
+      _selectedDepartment = data.department.department;
+      _selectedCourse = data.department.course;
+      _selectedDivison = data.department.divison;
+      _selectedBatch = data.department.batch;
+      _oldSendDate = data.datetime;
+      _notificationID = data.id;
+      if (data.expiredate != 'EmptyLastDate123') {
+        expiredate = DateTime.parse(data.expiredate);
+      }
+      if (data.link != 'EmptyLink123') {
+        _formData['link'] = data.link;
+      }
+      _argumentDataFatch = true;
+    }
+  }
+
   final GlobalKey<FormState> _formKey = GlobalKey();
 
   final _sendFocuse = FocusNode();
@@ -85,8 +109,7 @@ class _AddNotificationScreenState extends State<AddNotificationScreen> {
     if (expiredate == null) {
       _formData['expiredate'] = 'EmptyLastDate123';
     } else {
-      _formData['expiredate'] =
-          expiredate.toIso8601String();
+      _formData['expiredate'] = expiredate.toIso8601String();
     }
     //check for link
     if (_formData['link'] == '') {
@@ -95,19 +118,37 @@ class _AddNotificationScreenState extends State<AddNotificationScreen> {
 
     try {
       await checkTheDepartmets();
-      await Provider.of<UtuNotification>(context, listen: false)
-          .sendNotification(
-        title: _formData['title'],
-        description: _formData['description'],
-        department: _formData['department'],
-        course: _formData['course'],
-        divison: _formData['divison'],
-        batch: _formData['batch'],
-        userid: uid,
-        userName: uName,
-        expiredate: _formData['expiredate'],
-        link: _formData['link'],
-      );
+      if (!_argumentDataFatch) {
+        await Provider.of<UtuNotification>(context, listen: false)
+            .sendNotification(
+          title: _formData['title'],
+          description: _formData['description'],
+          department: _formData['department'],
+          course: _formData['course'],
+          divison: _formData['divison'],
+          batch: _formData['batch'],
+          userid: uid,
+          userName: uName,
+          expiredate: _formData['expiredate'],
+          link: _formData['link'],
+        );
+      } else {
+        await Provider.of<UtuNotification>(context, listen: false)
+            .updateNotification(
+          id: _notificationID,
+          title: _formData['title'],
+          description: _formData['description'],
+          department: _formData['department'],
+          course: _formData['course'],
+          divison: _formData['divison'],
+          batch: _formData['batch'],
+          userid: uid,
+          userName: uName,
+          expiredate: _formData['expiredate'],
+          link: _formData['link'],
+          oldSendDate: _oldSendDate,
+        );
+      }
       setState(() {
         _isloding = false;
       });
@@ -280,6 +321,12 @@ class _AddNotificationScreenState extends State<AddNotificationScreen> {
       FocusScope.of(context).unfocus();
     }
 
+    if (ModalRoute.of(context).settings.arguments != null) {
+      final NotificationType arguments =
+          ModalRoute.of(context).settings.arguments as NotificationType;
+      setdata(arguments);
+    }
+
     final currentUser = Provider.of<Faculty>(context, listen: false).details;
     return Scaffold(
       appBar: AppBar(
@@ -306,6 +353,8 @@ class _AddNotificationScreenState extends State<AddNotificationScreen> {
                   decoration: InputDecoration(labelText: 'title'),
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.text,
+                  initialValue:
+                      _formData['title'] != '' ? _formData['title'] : null,
                   validator: (value) {
                     if (value.isEmpty) {
                       return 'Please Enter title';
@@ -323,6 +372,9 @@ class _AddNotificationScreenState extends State<AddNotificationScreen> {
                   decoration: InputDecoration(labelText: 'description'),
                   maxLines: null,
                   minLines: 2,
+                  initialValue: _formData['description'] != ''
+                      ? _formData['description']
+                      : null,
                   keyboardType: TextInputType.multiline,
                   focusNode: _descriptionFocuse,
                   //textInputAction: TextInputAction.co,
@@ -451,7 +503,10 @@ class _AddNotificationScreenState extends State<AddNotificationScreen> {
                     Flexible(
                       child: DateTimeField(
                         format: DateFormat("dd/MM/yyyy hh:mm a"),
-                        //initialValue: DateTime.now().add(Duration(days: 1)),
+                        decoration: InputDecoration(
+                          labelText: 'Selete Date & Time',
+                        ),
+                        initialValue: _argumentDataFatch ? expiredate : null,
                         onChanged: (value) {
                           expiredate = value;
                         },
@@ -488,6 +543,8 @@ class _AddNotificationScreenState extends State<AddNotificationScreen> {
                       child: TextFormField(
                         maxLines: null,
                         minLines: 1,
+                        initialValue:
+                            _formData['link'] != '' ? _formData['link'] : null,
                         keyboardType: TextInputType.multiline,
                         onSaved: (value) {
                           _formData['link'] = value;

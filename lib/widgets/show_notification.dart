@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:utu_faculty/screens/add_notification_screen.dart';
 import '../provider/notification.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -96,188 +97,201 @@ class _ShowNotificationState extends State<ShowNotification> {
       },
       child: Wrap(
         children: <Widget>[
-          Card(
-            elevation: 4,
-            shadowColor: _isEmptyDate
-                ? Colors.orange
-                : _dateExpireOrNot
-                    ? Theme.of(context).errorColor
-                    : Colors.green,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            child: Column(
-              children: <Widget>[
-                ListTile(
-                  title: Text(
-                    widget.data.title.toString(),
-                    style: TextStyle(
-                        color: _dateExpireOrNot
-                            ? Theme.of(context).errorColor
-                            : Colors.indigo,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20),
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _expanded = !_expanded;
+              });
+            },
+            child: Card(
+              elevation: 4,
+              shadowColor: _isEmptyDate
+                  ? Colors.orange
+                  : _dateExpireOrNot
+                      ? Theme.of(context).errorColor
+                      : Colors.green,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                children: <Widget>[
+                  ListTile(
+                    title: Text(
+                      widget.data.title.toString(),
+                      style: TextStyle(
+                          color: _dateExpireOrNot
+                              ? Theme.of(context).errorColor
+                              : Colors.indigo,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20),
+                    ),
+                    subtitle: Text(
+                      widget.data.discription,
+                      //softWrap: true,
+                      overflow: !_expanded ? TextOverflow.ellipsis : null,
+                    ),
+                    trailing: IconButton(
+                        icon: Icon(
+                          Icons.edit,
+                          color: _dateExpireOrNot
+                              ? Colors.grey
+                              : Colors.indigo.shade400,
+                        ),
+                        onPressed: _dateExpireOrNot
+                            ? null
+                            : () {
+                                Navigator.of(context).pushNamed(
+                                    AddNotificationScreen.routeName,
+                                    arguments: widget.data);
+                              }),
                   ),
-                  subtitle: Text(
-                    widget.data.discription,
-                    //softWrap: true,
-                    overflow: !_expanded ? TextOverflow.ellipsis : null,
-                  ),
-                  trailing: IconButton(
-                      icon: _expanded
-                          ? Icon(Icons.expand_less)
-                          : Icon(Icons.expand_more),
-                      onPressed: () {
-                        setState(() {
-                          _expanded = !_expanded;
-                        });
-                      }),
-                ),
-                _expanded
-                    ? Container(
-                        padding:
-                            EdgeInsetsDirectional.only(bottom: 10, start: 17),
-                        child: Column(
-                          children: <Widget>[
-                            if (!_isLinkEmpty)
-                              SizedBox(
-                                height: 10,
-                              ),
-                            if (!_isLinkEmpty)
-                              Container(
-                                padding: EdgeInsets.only(right: 15),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: GestureDetector(
-                                          onTap: () => _launchUrl(),
-                                          child: RichText(
-                                            text: TextSpan(
-                                              text: 'Link : ',
-                                              style: TextStyle(
-                                                color: Colors.black,
-                                              ),
-                                              children: <TextSpan>[
-                                                TextSpan(
-                                                  text: widget.data.link,
-                                                  style: TextStyle(
-                                                      color: Colors.lightBlue,
-                                                      decoration: TextDecoration
-                                                          .underline),
+                  _expanded
+                      ? Container(
+                          padding:
+                              EdgeInsetsDirectional.only(bottom: 10, start: 17),
+                          child: Column(
+                            children: <Widget>[
+                              if (!_isLinkEmpty)
+                                Container(
+                                  padding: EdgeInsets.only(right: 15),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: GestureDetector(
+                                            onTap: () => _launchUrl(),
+                                            child: RichText(
+                                              text: TextSpan(
+                                                text: 'Link : ',
+                                                style: TextStyle(
+                                                  color: Colors.black,
                                                 ),
-                                              ],
+                                                children: <TextSpan>[
+                                                  TextSpan(
+                                                    text: widget.data.link,
+                                                    style: TextStyle(
+                                                        color: Colors.lightBlue,
+                                                        decoration:
+                                                            TextDecoration
+                                                                .underline),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                    IconButton(
-                                      icon: Icon(Icons.content_copy),
-                                      onPressed: () {
-                                        Clipboard.setData(ClipboardData(
-                                            text: widget.data.link));
-                                        Scaffold.of(context)
-                                            .showSnackBar(SnackBar(
-                                          content: Text(
-                                            "URL Copied to Clipboard",
-                                            textAlign: TextAlign.center,
+                                      IconButton(
+                                        icon: Icon(Icons.content_copy),
+                                        onPressed: () {
+                                          Clipboard.setData(ClipboardData(
+                                              text: widget.data.link));
+                                          Scaffold.of(context)
+                                              .showSnackBar(SnackBar(
+                                            content: Text(
+                                              "URL Copied to Clipboard",
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ));
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              if (!_isLinkEmpty)
+                                SizedBox(
+                                  height: 10,
+                                ),
+                              Container(
+                                padding: EdgeInsets.only(right: 25),
+                                child: Column(
+                                  children: [
+                                    Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: RichText(
+                                        text: TextSpan(
+                                          text: 'Location : ',
+                                          style: TextStyle(
+                                            color: Colors.black,
                                           ),
-                                        ));
-                                      },
+                                          children: <TextSpan>[
+                                            TextSpan(
+                                              text: widget
+                                                  .data.department.department,
+                                            ),
+                                            TextSpan(
+                                              text: ' > ',
+                                            ),
+                                            TextSpan(
+                                              text:
+                                                  widget.data.department.course,
+                                            ),
+                                            TextSpan(
+                                              text: ' > ',
+                                            ),
+                                            TextSpan(
+                                              text: widget
+                                                  .data.department.divison,
+                                            ),
+                                            TextSpan(
+                                              text: ' > ',
+                                            ),
+                                            TextSpan(
+                                              text:
+                                                  widget.data.department.batch,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: <Widget>[
+                                        Text('by : ${widget.data.by}')
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: <Widget>[
+                                        Text(
+                                          'Send Date : ${DateFormat('dd/MM/yyyy hh:mm a').format(widget.data.datetime)}',
+                                          style:
+                                              TextStyle(color: Colors.black26),
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: <Widget>[
+                                        _isEmptyDate
+                                            ? Container()
+                                            : Text(
+                                                'Expire Date : ${DateFormat('dd/MM/yyyy hh:mm a').format(_expiredate)}',
+                                                style: TextStyle(
+                                                  color: _dateExpireOrNot
+                                                      ? Theme.of(context)
+                                                          .errorColor
+                                                      : Colors.black26,
+                                                ),
+                                              ),
+                                      ],
                                     ),
                                   ],
                                 ),
                               ),
-                            if (!_isLinkEmpty)
-                              SizedBox(
-                                height: 10,
-                              ),
-                            Container(
-                              padding: EdgeInsets.only(right: 25),
-                              child: Column(
-                                children: [
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: RichText(
-                                      text: TextSpan(
-                                        text: 'Location : ',
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                        ),
-                                        children: <TextSpan>[
-                                          TextSpan(
-                                            text: widget
-                                                .data.department.department,
-                                          ),
-                                          TextSpan(
-                                            text: ' > ',
-                                          ),
-                                          TextSpan(
-                                            text: widget.data.department.course,
-                                          ),
-                                          TextSpan(
-                                            text: ' > ',
-                                          ),
-                                          TextSpan(
-                                            text:
-                                                widget.data.department.divison,
-                                          ),
-                                          TextSpan(
-                                            text: ' > ',
-                                          ),
-                                          TextSpan(
-                                            text: widget.data.department.batch,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: <Widget>[
-                                      Text('by : ${widget.data.by}')
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: <Widget>[
-                                      Text(
-                                        'Send Date : ${DateFormat('dd/MM/yyyy hh:mm a').format(widget.data.datetime)}',
-                                        style: TextStyle(color: Colors.black26),
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: <Widget>[
-                                      _isEmptyDate
-                                          ? Container()
-                                          : Text(
-                                              'Expire Date : ${DateFormat('dd/MM/yyyy hh:mm a').format(_expiredate)}',
-                                              style: TextStyle(
-                                                color: _dateExpireOrNot
-                                                    ? Theme.of(context)
-                                                        .errorColor
-                                                    : Colors.black26,
-                                              ),
-                                            ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    : Container(),
-              ],
+                            ],
+                          ),
+                        )
+                      : Container(),
+                ],
+              ),
             ),
           ),
         ],

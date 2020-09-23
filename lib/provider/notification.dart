@@ -74,6 +74,44 @@ class UtuNotification with ChangeNotifier {
     }
   }
 
+  Future<void> updateNotification({
+    String id,
+    String title,
+    String description,
+    String department,
+    String course,
+    String divison,
+    String batch,
+    String userid,
+    String userName,
+    String expiredate,
+    String link,
+    DateTime oldSendDate,
+  }) async {
+    try {
+      await Firestore.instance
+          .collection('notification')
+          .document(id)
+          .updateData({
+        'title': title,
+        'description': description,
+        'datetime': oldSendDate.toIso8601String(),
+        'by': userName,
+        'byid': userid,
+        'location': {
+          'department': department,
+          'course': course,
+          'divison': divison,
+          'batch': batch
+        },
+        'expiredate': expiredate,
+        'link': link,
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
 //  _addNotification(List xyz, String id, dynamic data) {
 //    xyz.add(
 //      NotificationType(
