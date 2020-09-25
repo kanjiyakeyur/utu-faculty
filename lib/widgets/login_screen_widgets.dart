@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class LoginScrreenWidgets extends StatefulWidget {
   final Future<void> Function(String emailId, String password) loginFn;
@@ -22,6 +24,7 @@ class _LoginScrreenWidgetsState extends State<LoginScrreenWidgets> {
   void dispose() {
     _passwordFocusNode.dispose();
     _loginFocusNode.dispose();
+    _emailController.dispose();
     super.dispose();
   }
 
@@ -47,6 +50,54 @@ class _LoginScrreenWidgetsState extends State<LoginScrreenWidgets> {
       });
     }
     return;
+  }
+
+  Future<void> _showErrorDialog(String title, String errorMessage) async {
+    await showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(title),
+        content: Text(errorMessage),
+        actions: <Widget>[
+          FlatButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text('Ohky!'),
+          )
+        ],
+      ),
+    );
+  }
+
+  //for forgot password
+  final TextEditingController _emailController = TextEditingController();
+  Future<void> _forgotPassword() async {
+    try {
+      if (_emailController.text.isEmpty) {
+        throw 'Please enter email.';
+      } else if (!_emailController.text.contains('@')) {
+        throw 'Please enter valid email.';
+      }
+      setState(() {
+        _isLoding = true;
+      });
+      await FirebaseAuth.instance
+          .sendPasswordResetEmail(email: _emailController.text);
+      setState(() {
+        _isLoding = false;
+      });
+      _showErrorDialog(
+          'Succesfull :)', 'Check your email and reset the password.');
+    } on PlatformException catch (error) {
+      setState(() {
+        _isLoding = false;
+      });
+      _showErrorDialog('A error Occoured !!', error.message);
+    } catch (error) {
+      setState(() {
+        _isLoding = false;
+      });
+      _showErrorDialog('Missing Information', error);
+    }
   }
 
   @override
@@ -81,6 +132,7 @@ class _LoginScrreenWidgetsState extends State<LoginScrreenWidgets> {
                           decoration: InputDecoration(labelText: 'Email'),
                           textInputAction: TextInputAction.next,
                           keyboardType: TextInputType.emailAddress,
+                          controller: _emailController,
                           onFieldSubmitted: (_) {
                             FocusScope.of(context)
                                 .requestFocus(_passwordFocusNode);
@@ -149,7 +201,19 @@ class _LoginScrreenWidgetsState extends State<LoginScrreenWidgets> {
                                 onPressed: () {
                                   FocusScope.of(context).unfocus();
                                   _saveForm();
-                                })
+                                },
+                              ),
+                        if (!_isLoding)
+                          FlatButton(
+                            onPressed: _forgotPassword,
+                            child: Text(
+                              'Forgot your password !',
+                              style: TextStyle(
+                                //decoration: TextDecoration.underline,
+                                color: Colors.indigo.shade400,
+                              ),
+                            ),
+                          )
                       ],
                     ),
                   ),

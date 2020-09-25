@@ -15,7 +15,7 @@ class AccountInfoScreen extends StatefulWidget {
 class _AccountInfoScreenState extends State<AccountInfoScreen> {
   //for password change
   bool _showwidget = false;
-  bool _loading = true;
+  bool _loading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -145,6 +145,7 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
                     height: 50,
                   ),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       RaisedButton(
                         shape: RoundedRectangleBorder(
@@ -167,7 +168,7 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
                                   setState(() {
                                     _loading = false;
                                   });
-                                  await _showErrorDialog('Succesfull !!!',
+                                  await _showErrorDialog('Succesfull :)',
                                       'Check your associative email And Go to link for reset password');
                                 } on PlatformException catch (error) {
                                   setState(() {
@@ -197,10 +198,11 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
                       if (_showwidget)
                         _loading
                             ? Container(
-                                width: 30,
-                                height: 30,
+                                width: 25,
+                                height: 25,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
+                                  backgroundColor: Colors.pink.shade300,
                                 ),
                               )
                             : Icon(
