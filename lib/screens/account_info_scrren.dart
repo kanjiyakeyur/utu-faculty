@@ -1,13 +1,40 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import './drawer_screen.dart';
 import 'package:provider/provider.dart';
 import '../provider/faculty.dart';
 
-class AccountInfoScreen extends StatelessWidget {
+class AccountInfoScreen extends StatefulWidget {
   static const routeName = '/AccountInfo';
 
   @override
+  _AccountInfoScreenState createState() => _AccountInfoScreenState();
+}
+
+class _AccountInfoScreenState extends State<AccountInfoScreen> {
+  //for password change
+  bool _showwidget = false;
+  bool _loading = true;
+
+  @override
   Widget build(BuildContext context) {
+    Future<void> _showErrorDialog(String title, String errorMessage) async {
+      await showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text(title),
+          content: Text(errorMessage),
+          actions: <Widget>[
+            FlatButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: Text('Ohky!'),
+            )
+          ],
+        ),
+      );
+    }
+
     //BuildContext ctx = context;
     try {
       final GlobalKey<ScaffoldState> _scaffoldKey =
@@ -17,6 +44,7 @@ class AccountInfoScreen extends StatelessWidget {
         'name': da['name'],
         'mailId': da['mailId']
       };
+
       return Scaffold(
           key: _scaffoldKey,
           appBar: AppBar(
@@ -60,7 +88,7 @@ class AccountInfoScreen extends StatelessWidget {
                   })
             ],
           ),
-          drawer: DrawerScreen(routeName),
+          drawer: DrawerScreen(AccountInfoScreen.routeName),
           body: SingleChildScrollView(
             child: Container(
               //margin: EdgeInsets.all(10),
@@ -96,22 +124,6 @@ class AccountInfoScreen extends StatelessWidget {
                   SizedBox(
                     height: 13,
                   ),
-
-//              Text('EnRoll No :',
-//                style: TextStyle(
-//                  color : Colors.black45
-//                ),
-//              ),
-//              SizedBox(height: 3,),
-//              Text(std.enrollNo.toString(),
-//                style: TextStyle(
-//                  fontWeight: FontWeight.w500,
-//                  fontSize: 20,
-//                  color: Colors.indigo
-//                ),
-//              ),
-//              SizedBox(height: 7,),
-//              Divider(),
                   SizedBox(
                     height: 7,
                   ),
@@ -129,68 +141,75 @@ class AccountInfoScreen extends StatelessWidget {
                         fontSize: 20,
                         color: Colors.indigo),
                   ),
-//              SizedBox(height: 7,),
-//              Divider(),
-//              SizedBox(height: 7,),
-//              Text('Department :',
-//                style: TextStyle(
-//                  color : Colors.black45
-//                ),
-//              ),
-//              SizedBox(height: 3,),
-//              Text(std.location.department,
-//                style: TextStyle(
-//                  fontWeight: FontWeight.w500,
-//                  fontSize: 20,
-//                  color: Colors.indigo
-//                ),
-//              ),
-//              SizedBox(height: 13,),
-//
-//              Text('course :',
-//                style: TextStyle(
-//                  color : Colors.black45
-//                ),
-//              ),
-//              SizedBox(height: 3,),
-//              Text(std.location.course,
-//                style: TextStyle(
-//                  fontWeight: FontWeight.w500,
-//                  fontSize: 20,
-//                  color: Colors.indigo
-//                ),
-//              ),
-//              SizedBox(height: 13,),
-//
-//              Text('Divison :',
-//                style: TextStyle(
-//                  color : Colors.black45
-//                ),
-//              ),
-//              SizedBox(height: 3,),
-//              Text(std.location.divison,
-//                style: TextStyle(
-//                  fontWeight: FontWeight.w500,
-//                  fontSize: 20,
-//                  color: Colors.indigo
-//                ),
-//              ),
-//              SizedBox(height: 13,),
-//
-//              Text('Batch :',
-//                style: TextStyle(
-//                  color : Colors.black45
-//                ),
-//              ),
-//              SizedBox(height: 3,),
-//              Text(std.location.batch,
-//                style: TextStyle(
-//                  fontWeight: FontWeight.w500,
-//                  fontSize: 20,
-//                  color: Colors.indigo
-//                ),
-//              ),
-//              SizedBox(height: 13,),
+                  SizedBox(
+                    height: 50,
+                  ),
+                  Row(
+                    children: [
+                      RaisedButton(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        color: Colors.blue.shade600,
+                        elevation: 4,
+                        onPressed: !_showwidget
+                            ? () async {
+                                try {
+                                  setState(() {
+                                    _showwidget = true;
+                                    _loading = true;
+                                  });
+                                  final _auth = FirebaseAuth.instance;
+                                  final currentUser = await _auth.currentUser();
+                                  await _auth.sendPasswordResetEmail(
+                                    email: currentUser.email,
+                                  );
+                                  setState(() {
+                                    _loading = false;
+                                  });
+                                  await _showErrorDialog('Succesfull !!!',
+                                      'Check your associative email And Go to link for reset password');
+                                } on PlatformException catch (error) {
+                                  setState(() {
+                                    _showwidget = false;
+                                    _loading = false;
+                                  });
+                                  await _showErrorDialog(
+                                      'A error Occoured !!', error.message);
+                                } catch (error) {
+                                  setState(() {
+                                    _showwidget = false;
+                                    _loading = false;
+                                  });
+                                  await _showErrorDialog(
+                                      'A error Occoured !!', error);
+                                }
+                              }
+                            : null,
+                        child: Text(
+                          'Reqest for Change Password',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      if (_showwidget)
+                        _loading
+                            ? Container(
+                                width: 30,
+                                height: 30,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : Icon(
+                                Icons.check,
+                                color: Colors.indigo.shade500,
+                                size: 30,
+                              )
+                    ],
+                  )
                 ],
               ),
             ),

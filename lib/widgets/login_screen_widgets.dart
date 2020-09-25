@@ -133,7 +133,8 @@ class _LoginScrreenWidgetsState extends State<LoginScrreenWidgets> {
                               )
                             : RaisedButton(
                                 shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20)),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
                                 color: Colors.indigo.shade400,
                                 elevation: 0,
                                 focusNode: _loginFocusNode,

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:utu_faculty/provider/faculty.dart';
 import './home_screen.dart';
 import './Account_info_scrren.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 //import '../main.dart' as main;
 

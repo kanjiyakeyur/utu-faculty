@@ -12,8 +12,6 @@ import './screens/home_screen.dart';
 import './screens/add_notification_screen.dart';
 import './screens/account_info_scrren.dart';
 
-import './screens/test.dart';
-
 void main() {
   runApp(MyApp());
 }

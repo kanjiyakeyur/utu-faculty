@@ -22,7 +22,6 @@ class Faculty with ChangeNotifier {
 
   Future<void> fatchFacultyDetails() async {
     try {
-      print('//////////////////$_userId$_name');
       var re = await FirebaseAuth.instance.currentUser();
       _userId = re.uid;
 
