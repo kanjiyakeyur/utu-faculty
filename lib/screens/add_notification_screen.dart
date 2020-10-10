@@ -13,7 +13,8 @@ class AddNotificationScreen extends StatefulWidget {
   _AddNotificationScreenState createState() => _AddNotificationScreenState();
 }
 
-class _AddNotificationScreenState extends State<AddNotificationScreen> {
+class _AddNotificationScreenState extends State<AddNotificationScreen>
+    with TickerProviderStateMixin {
   Map<String, String> _formData = {
     'title': '',
     'description': '',
@@ -50,6 +51,20 @@ class _AddNotificationScreenState extends State<AddNotificationScreen> {
   }
 
   final GlobalKey<FormState> _formKey = GlobalKey();
+
+  Animation<double> animation;
+  AnimationController animationController;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    animationController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+    animation =
+        Tween<double>(begin: 0.0, end: 500).animate(animationController);
+    animationController.forward();
+  }
 
   final _sendFocuse = FocusNode();
   final _descriptionFocuse = FocusNode();
@@ -307,6 +322,9 @@ class _AddNotificationScreenState extends State<AddNotificationScreen> {
     });
   }
 
+  FocusNode _titlefocusNode = FocusNode();
+  Color color;
+
   @override
   void dispose() {
     _sendFocuse.dispose();
@@ -327,9 +345,24 @@ class _AddNotificationScreenState extends State<AddNotificationScreen> {
       setdata(arguments);
     }
 
+    _titlefocusNode.addListener(() {
+      setState(() {
+        color = _titlefocusNode.hasFocus ? Colors.blue : Colors.red;
+      });
+    });
+    _descriptionFocuse.addListener(() {
+      setState(() {
+        color = _descriptionFocuse.hasFocus ? Colors.blue : Colors.grey;
+      });
+    });
+
     final currentUser = Provider.of<Faculty>(context, listen: false).details;
     return Scaffold(
       appBar: AppBar(
+        shape: ContinuousRectangleBorder(
+            borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(50),
+                bottomRight: Radius.circular(50))),
         centerTitle: true,
         title: Text(
           'Announcement',
@@ -339,251 +372,301 @@ class _AddNotificationScreenState extends State<AddNotificationScreen> {
               color: Colors.indigo.shade700),
         ),
       ),
-      body: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          child: Container(
-            margin: EdgeInsets.all(15),
-            child: Column(
-              children: <Widget>[
-                SizedBox(
-                  height: 5,
-                ),
-                TextFormField(
-                  decoration: InputDecoration(labelText: 'title'),
-                  textInputAction: TextInputAction.next,
-                  keyboardType: TextInputType.text,
-                  initialValue:
-                      _formData['title'] != '' ? _formData['title'] : null,
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Please Enter title';
-                    }
-                    return null;
-                  },
-                  onFieldSubmitted: (_) {
-                    FocusScope.of(context).requestFocus(_descriptionFocuse);
-                  },
-                  onSaved: (value) {
-                    _formData['title'] = value;
-                  },
-                ),
-                TextFormField(
-                  decoration: InputDecoration(labelText: 'description'),
-                  maxLines: null,
-                  minLines: 2,
-                  initialValue: _formData['description'] != ''
-                      ? _formData['description']
-                      : null,
-                  keyboardType: TextInputType.multiline,
-                  focusNode: _descriptionFocuse,
-                  //textInputAction: TextInputAction.co,
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Please Enter description';
-                    }
-                    return null;
-                  },
-
-                  onFieldSubmitted: (_) {
-                    FocusScope.of(context).unfocus();
-                  },
-                  onSaved: (value) {
-                    _formData['description'] = value;
-                  },
-                ),
-                SizedBox(
-                  height: 25,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text(_selectedDepartment.isEmpty
-                        ? 'Select Department '
-                        : _selectedDepartment),
-                    DropdownButton(
-                      items: _department
-                          .map((e) => DropdownMenuItem<String>(
-                                value: e,
-                                child: new Text(e),
-                              ))
-                          .toList(),
-                      //focusNode: _selectDepartmentFocuse,
-                      hint: Text('Select Department'),
-                      //value: selectedDepartment,
-                      //isExpanded: true,
-                      onChanged: (String value) {
-                        FocusScope.of(context).requestFocus(_savebutton);
-                        onSelectDepartment(value);
-                      },
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text(_selectedCourse.isEmpty
-                        ? 'Select Course '
-                        : _selectedCourse),
-                    DropdownButton(
-                        items: _course,
-
-                        //isExpanded: true,
-                        //value: selectedCourse,
-                        hint: Text('Select Course'),
-                        disabledHint: _selectedCourse.isEmpty
-                            ? Text('first Select Department')
-                            : Text('---'),
-                        onChanged: _disableCourse
-                            ? null
-                            : (String value) {
-                                onSelectCourse(value);
-                              }),
-                  ],
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text(_selectedDivison.isEmpty
-                        ? 'Select Divison'
-                        : _selectedDivison),
-                    DropdownButton(
-                        items: _divison,
-                        hint: Text('Select Divison'),
-                        disabledHint: _selectedDivison.isEmpty
-                            ? Text('first Select Course')
-                            : Text('---'),
-                        onChanged: _disableDivison
-                            ? null
-                            : (String value) {
-                                onSelectDivison(value);
-                              })
-                  ],
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text(_selectedBatch.isEmpty
-                        ? 'Select Divison'
-                        : _selectedBatch),
-                    DropdownButton(
-                        items: _batch,
-                        hint: Text('Select Batch'),
-                        disabledHint: _selectedBatch.isEmpty
-                            ? Text('first Select Divison')
-                            : Text('---'),
-                        onChanged: _disableBatch
-                            ? null
-                            : (String value) {
-                                onSelectBatch(value);
-                              })
-                  ],
-                ),
-                SizedBox(
-                  height: 5,
-                ),
-                Divider(),
-                Text('Optional Fields'),
-                Divider(),
-                Row(
-                  children: [
-                    Text('Expire Date   : '),
-                    SizedBox(
-                      width: 40,
-                    ),
-                    Flexible(
-                      child: DateTimeField(
-                        format: DateFormat("dd/MM/yyyy hh:mm a"),
-                        decoration: InputDecoration(
-                          labelText: 'Selete Date & Time',
-                        ),
-                        initialValue: _argumentDataFatch ? expiredate : null,
-                        onChanged: (value) {
-                          expiredate = value;
-                        },
-                        onShowPicker: (context, currentValue) async {
-                          final date = await showDatePicker(
-                              helpText: 'Select Date',
-                              context: context,
-                              firstDate: DateTime.now(),
-                              initialDate: currentValue ?? DateTime.now(),
-                              lastDate:
-                                  DateTime.now().add(Duration(days: 1000)));
-                          if (date != null) {
-                            final time = await showTimePicker(
-                              context: context,
-                              initialTime: TimeOfDay.fromDateTime(
-                                  currentValue ?? DateTime.now()),
-                            );
-
-                            expiredate = DateTimeField.combine(date, time);
-                            return expiredate;
-                          } else {
-                            return currentValue;
-                          }
-                        },
-                      ),
-                    )
-                  ],
-                ),
-                Row(
-                  children: [
-                    Icon(Icons.link),
-                    Text('  Link  :  '),
-                    Flexible(
-                      child: TextFormField(
-                        maxLines: null,
-                        minLines: 1,
-                        initialValue:
-                            _formData['link'] != '' ? _formData['link'] : null,
-                        keyboardType: TextInputType.multiline,
-                        onSaved: (value) {
-                          _formData['link'] = value;
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 30,
-                ),
-                _isloding
-                    ? CircularProgressIndicator()
-                    : RaisedButton.icon(
-                        focusNode: _savebutton,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20)),
-                        color: Colors.indigo.shade400,
-                        elevation: 0,
-                        icon: Icon(
-                          Icons.near_me,
-                          color: Colors.white,
-                        ),
-                        label: Text(
-                          'Conform !',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w300,
-                              letterSpacing: 3),
-                        ),
-                        onPressed: () {
-                          removeAllFocus();
-                          _saveform(currentUser['uid'], currentUser['name']);
-                        })
-              ],
+      body: Stack(
+        children: <Widget>[
+          ScaleTransition(
+            scale: animationController,
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              color: Colors.purple[50],
             ),
           ),
-        ),
+          Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+              child: Container(
+                margin: EdgeInsets.all(15),
+                child: Column(
+                  children: <Widget>[
+                    SizedBox(
+                      height: 5,
+                    ),
+                    TextFormField(
+                      focusNode: _titlefocusNode,
+                      decoration: InputDecoration(
+                        labelText: 'title',
+                        labelStyle: TextStyle(
+                          color: _titlefocusNode.hasFocus
+                              ? Colors.indigo
+                              : Colors.grey,
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: const BorderSide(
+                              color: Colors.indigo, width: 2.0),
+                        ),
+                      ),
+                      textInputAction: TextInputAction.next,
+                      keyboardType: TextInputType.text,
+                      initialValue:
+                          _formData['title'] != '' ? _formData['title'] : null,
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return 'Please Enter title';
+                        }
+                        return null;
+                      },
+                      onFieldSubmitted: (_) {
+                        FocusScope.of(context).requestFocus(_descriptionFocuse);
+                      },
+                      onSaved: (value) {
+                        _formData['title'] = value;
+                      },
+                    ),
+                    TextFormField(
+                      decoration: InputDecoration(
+                        labelText: 'description',
+                        labelStyle: TextStyle(
+                          color: _descriptionFocuse.hasFocus
+                              ? Colors.indigo
+                              : Colors.grey,
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: const BorderSide(
+                              color: Colors.indigo, width: 2.0),
+                        ),
+                      ),
+                      maxLines: null,
+                      minLines: 2,
+                      initialValue: _formData['description'] != ''
+                          ? _formData['description']
+                          : null,
+                      keyboardType: TextInputType.multiline,
+                      focusNode: _descriptionFocuse,
+                      //textInputAction: TextInputAction.co,
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return 'Please Enter description';
+                        }
+                        return null;
+                      },
+
+                      onFieldSubmitted: (_) {
+                        FocusScope.of(context).unfocus();
+                      },
+                      onSaved: (value) {
+                        _formData['description'] = value;
+                      },
+                    ),
+                    SizedBox(
+                      height: 25,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(_selectedDepartment.isEmpty
+                            ? 'Select Department '
+                            : _selectedDepartment),
+                        DropdownButton(
+                          items: _department
+                              .map((e) => DropdownMenuItem<String>(
+                                    value: e,
+                                    child: new Text(e),
+                                  ))
+                              .toList(),
+                          //focusNode: _selectDepartmentFocuse,
+                          hint: Text('Select Department'),
+                          //value: selectedDepartment,
+                          //isExpanded: true,
+                          onChanged: (String value) {
+                            FocusScope.of(context).requestFocus(_savebutton);
+                            onSelectDepartment(value);
+                          },
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(_selectedCourse.isEmpty
+                            ? 'Select Course '
+                            : _selectedCourse),
+                        DropdownButton(
+                            items: _course,
+
+                            //isExpanded: true,
+                            //value: selectedCourse,
+                            hint: Text('Select Course'),
+                            disabledHint: _selectedCourse.isEmpty
+                                ? Text('first Select Department')
+                                : Text('---'),
+                            onChanged: _disableCourse
+                                ? null
+                                : (String value) {
+                                    onSelectCourse(value);
+                                  }),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(_selectedDivison.isEmpty
+                            ? 'Select Divison'
+                            : _selectedDivison),
+                        DropdownButton(
+                            items: _divison,
+                            hint: Text('Select Divison'),
+                            disabledHint: _selectedDivison.isEmpty
+                                ? Text('first Select Course')
+                                : Text('---'),
+                            onChanged: _disableDivison
+                                ? null
+                                : (String value) {
+                                    onSelectDivison(value);
+                                  })
+                      ],
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(_selectedBatch.isEmpty
+                            ? 'Select Divison'
+                            : _selectedBatch),
+                        DropdownButton(
+                            items: _batch,
+                            hint: Text('Select Batch'),
+                            disabledHint: _selectedBatch.isEmpty
+                                ? Text('first Select Divison')
+                                : Text('---'),
+                            onChanged: _disableBatch
+                                ? null
+                                : (String value) {
+                                    onSelectBatch(value);
+                                  })
+                      ],
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Divider(),
+                    Text('Optional Fields'),
+                    Divider(),
+                    Row(
+                      children: [
+                        Text('Expire Date   : '),
+                        SizedBox(
+                          width: 40,
+                        ),
+                        Flexible(
+                          child: DateTimeField(
+                            format: DateFormat("dd/MM/yyyy hh:mm a"),
+                            decoration: InputDecoration(
+                              labelText: 'Selete Date & Time',
+                            ),
+                            initialValue:
+                                _argumentDataFatch ? expiredate : null,
+                            onChanged: (value) {
+                              expiredate = value;
+                            },
+                            onShowPicker: (context, currentValue) async {
+                              final date = await showDatePicker(
+                                  helpText: 'Select Date',
+                                  context: context,
+                                  firstDate: DateTime.now(),
+                                  initialDate: currentValue ?? DateTime.now(),
+                                  lastDate:
+                                      DateTime.now().add(Duration(days: 1000)));
+                              if (date != null) {
+                                final time = await showTimePicker(
+                                  context: context,
+                                  initialTime: TimeOfDay.fromDateTime(
+                                      currentValue ?? DateTime.now()),
+                                );
+
+                                expiredate = DateTimeField.combine(date, time);
+                                return expiredate;
+                              } else {
+                                return currentValue;
+                              }
+                            },
+                          ),
+                        )
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Icon(Icons.link),
+                        Text('  Link  :  '),
+                        Flexible(
+                          child: TextFormField(
+                            decoration: InputDecoration(
+                              focusedBorder: UnderlineInputBorder(
+                                borderSide: const BorderSide(
+                                    color: Colors.indigo, width: 2.0),
+                              ),
+                            ),
+                            maxLines: null,
+                            minLines: 1,
+                            initialValue: _formData['link'] != ''
+                                ? _formData['link']
+                                : null,
+                            keyboardType: TextInputType.multiline,
+                            onSaved: (value) {
+                              _formData['link'] = value;
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 30,
+                    ),
+                    _isloding
+                        ? CircularProgressIndicator()
+                        : Hero(
+                            tag: 'button',
+                            child: RaisedButton.icon(
+                                padding: EdgeInsets.only(
+                                    top: 10.0, bottom: 10, left: 10, right: 10),
+                                focusNode: _savebutton,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20)),
+                                color: Colors.indigo.shade400,
+                                elevation: 0,
+                                icon: Icon(
+                                  Icons.near_me,
+                                  color: Colors.white,
+                                ),
+                                label: Text(
+                                  'Conform !',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w300,
+                                      letterSpacing: 3),
+                                ),
+                                onPressed: () {
+                                  removeAllFocus();
+                                  _saveform(
+                                      currentUser['uid'], currentUser['name']);
+                                }),
+                          )
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -31,6 +31,7 @@ class MyApp extends StatelessWidget {
       ],
       child: Consumer<Faculty>(
         builder: (ctx, faculty, _) => MaterialApp(
+          debugShowCheckedModeBanner: false,
           title: 'Flutter Demo',
           theme: ThemeData(
             primaryColor: Colors.indigo.shade50,

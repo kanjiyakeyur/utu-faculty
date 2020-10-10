@@ -132,11 +132,11 @@ class _ShowNotificationState extends State<ShowNotification> {
                     },
                     child: Card(
                       elevation: 4,
-                      shadowColor: _isEmptyDate
-                          ? Colors.orange
+                      color: _isEmptyDate
+                          ? Colors.orange[50]
                           : _dateExpireOrNot
-                              ? Theme.of(context).errorColor
-                              : Colors.green,
+                              ? Colors.red[50]
+                              : Colors.green[50],
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
@@ -146,9 +146,11 @@ class _ShowNotificationState extends State<ShowNotification> {
                             title: Text(
                               widget.data.title.toString(),
                               style: TextStyle(
-                                  color: _dateExpireOrNot
-                                      ? Theme.of(context).errorColor
-                                      : Colors.indigo,
+                                  color: _isEmptyDate
+                                      ? Colors.orange
+                                      : _dateExpireOrNot
+                                          ? Colors.red
+                                          : Colors.green,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 20),
                             ),
