@@ -39,8 +39,8 @@ class DrawerScreen extends StatelessWidget {
                 // color: Colors.white54,
                 borderRadius: BorderRadius.circular(5),
               ),
-              child: Image.network(
-                'https://i.postimg.cc/Qdp1cMTy/Uka-Tarsadia-University-Logo-1.png',
+              child: Image.asset(
+                'assets/images/logo.png',
                 fit: BoxFit.contain,
               ),
             ),
@@ -119,7 +119,7 @@ class DrawerScreen extends StatelessWidget {
               ),
             ),
             SizedBox(
-              height: 250,
+              height: mediaWidth.height * 0.2,
             ),
 //            OutlineButton.icon(
 //              onPressed: (){
