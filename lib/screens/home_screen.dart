@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import '../screens/add_notification_screen.dart';
 import './drawer_screen.dart';
 import '../provider/notification.dart';
@@ -246,35 +247,43 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 child: Text('Empty'),
               );
             }
-            animationController.forward();
-            return AnimatedList(
-              initialItemCount: data.length,
-              physics: BouncingScrollPhysics(),
-              itemBuilder: (ctx, index, animation) {
-                return FadeTransition(
-                  opacity: animationController,
-                  child: ShowNotification(
-                    filter: _filter,
-                    selectedFilter: _selectedFilter,
-                    data: NotificationType(
-                      id: data[index].documentID,
-                      title: data[index]['title'],
-                      discription: data[index]['description'],
-                      datetime: DateTime.parse(data[index]['datetime']),
-                      department: UtuDepartment(
-                        department: data[index]['location']['department'],
-                        course: data[index]['location']['course'],
-                        divison: data[index]['location']['divison'],
-                        batch: data[index]['location']['batch'],
+            // animationController.forward();
+            return AnimationLimiter(
+              child: ListView.builder(
+                itemCount: data.length,
+                physics: BouncingScrollPhysics(),
+                itemBuilder: (ctx, index) {
+                  return AnimationConfiguration.staggeredList(
+                    position: index,
+                    duration: const Duration(milliseconds: 375),
+                    child: SlideAnimation(
+                      verticalOffset: 50.0,
+                      child: FadeInAnimation(
+                        child: ShowNotification(
+                          filter: _filter,
+                          selectedFilter: _selectedFilter,
+                          data: NotificationType(
+                            id: data[index].documentID,
+                            title: data[index]['title'],
+                            discription: data[index]['description'],
+                            datetime: DateTime.parse(data[index]['datetime']),
+                            department: UtuDepartment(
+                              department: data[index]['location']['department'],
+                              course: data[index]['location']['course'],
+                              divison: data[index]['location']['divison'],
+                              batch: data[index]['location']['batch'],
+                            ),
+                            by: data[index]['by'],
+                            byid: data[index]['byid'],
+                            expiredate: data[index]['expiredate'],
+                            link: data[index]['link'],
+                          ),
+                        ),
                       ),
-                      by: data[index]['by'],
-                      byid: data[index]['byid'],
-                      expiredate: data[index]['expiredate'],
-                      link: data[index]['link'],
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             );
           },
         ),
