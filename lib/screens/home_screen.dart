@@ -30,7 +30,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     animationController = AnimationController(
         vsync: this, duration: Duration(milliseconds: 2000));
@@ -129,7 +128,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             SliverAppBar(
               actions: <Widget>[
                 PopupMenuButton(
-                  icon: Icon(Icons.filter_list),
+                  icon: Icon(
+                    Icons.filter_list,
+                  ),
                   onSelected: (FilterList value) {
                     if (FilterList.All == value) {
                       setState(() {
@@ -157,34 +158,122 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       });
                     }
                   },
+                  offset: Offset(-100, 70),
+                  elevation: 10,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
                   itemBuilder: (_) => [
                     PopupMenuItem(
-                      child: Text('All'),
+                      child: Row(
+                        children: [
+                          Text('All'),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          CircleAvatar(
+                            radius: 5,
+                            backgroundColor: Colors.green,
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          CircleAvatar(
+                            radius: 5,
+                            backgroundColor: Colors.orange,
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          CircleAvatar(
+                            radius: 5,
+                            backgroundColor: Colors.red,
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                        ],
+                      ),
                       value: FilterList.All,
                     ),
                     PopupMenuItem(
-                      child: Text('Current'),
+                      child: Row(
+                        children: [
+                          Text('Current'),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          CircleAvatar(
+                            radius: 5,
+                            backgroundColor: Colors.green,
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          CircleAvatar(
+                            radius: 5,
+                            backgroundColor: Colors.orange,
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                        ],
+                      ),
                       value: FilterList.Current,
                     ),
                     PopupMenuItem(
-                      child: Text('Current With Expire'),
+                      child: Row(
+                        children: [
+                          Text('Current With Expire'),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          CircleAvatar(
+                            radius: 5,
+                            backgroundColor: Colors.green,
+                          )
+                        ],
+                      ),
                       value: FilterList.CurrenyWithExpire,
                     ),
                     PopupMenuItem(
-                      child: Text('Current Without Expire'),
+                      child: Row(
+                        children: [
+                          Text('Current Without Expire'),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          CircleAvatar(
+                            radius: 5,
+                            backgroundColor: Colors.orange,
+                          ),
+                        ],
+                      ),
                       value: FilterList.CurrentWithOutExpired,
                     ),
                     PopupMenuItem(
-                      child: Text('Expired'),
+                      child: Row(
+                        children: [
+                          Text('Expired'),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          CircleAvatar(
+                            radius: 5,
+                            backgroundColor: Colors.red,
+                          ),
+                        ],
+                      ),
                       value: FilterList.Expired,
                     )
                   ],
                 ),
               ],
               shape: ContinuousRectangleBorder(
-                  borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(50),
-                      bottomRight: Radius.circular(50))),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(50),
+                  bottomRight: Radius.circular(50),
+                ),
+              ),
               expandedHeight: 150.0,
               floating: true,
               pinned: true,
@@ -195,8 +284,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   borderRadius: BorderRadius.only(
                       bottomLeft: Radius.circular(20),
                       bottomRight: Radius.circular(20)),
-                  child: Image.network(
-                    'https://storage.pixteller.com/designs/designs-images/2019-03-27/05/simple-background-backgrounds-passion-simple-1-5c9b95c3a34f9.png',
+                  child: Image.asset(
+                    'assets/images/background.png',
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -299,7 +388,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             color: Colors.indigo.shade400,
             elevation: 0,
             label: Text(
-              'Send',
+              'Notice',
               style: TextStyle(
                   letterSpacing: 2,
                   color: Colors.white,
@@ -307,7 +396,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   fontWeight: FontWeight.w300),
             ),
             icon: Icon(
-              Icons.near_me,
+              Icons.add,
               color: Colors.white,
               size: 17,
             ),

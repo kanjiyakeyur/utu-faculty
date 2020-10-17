@@ -57,7 +57,6 @@ class _AddNotificationScreenState extends State<AddNotificationScreen>
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     animationController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 500));
