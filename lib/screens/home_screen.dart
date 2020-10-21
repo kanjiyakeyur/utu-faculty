@@ -28,6 +28,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   FilterList _selectedFilter = FilterList.All;
   AnimationController animationController;
 
+  final Shader linearGradient = LinearGradient(
+    colors: <Color>[
+      Colors.indigo.shade800,
+      Color.fromARGB(75, 255, 0, 205),
+    ],
+  ).createShader(Rect.fromLTWH(135.0, 0.0, 150.0, 70.0));
+
   @override
   void initState() {
     super.initState();
@@ -299,15 +306,22 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 28,
-                          color: Colors.indigo.shade700),
+                          //color: Colors.white
+                          shadows: [
+                            Shadow(color: Colors.white, blurRadius: 10)
+                          ],
+                          foreground: Paint()..shader = linearGradient),
                     ),
                     //SizedBox(width: 5,),
                     Text(
                       'Faculty',
                       style: TextStyle(
-                          //fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          color: Colors.black54),
+                        //fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                        shadows: [Shadow(color: Colors.white, blurRadius: 5)],
+                        //color: Colors.black54,
+                        foreground: Paint()..shader = linearGradient,
+                      ),
                     ),
                   ],
                 ),
