@@ -654,10 +654,32 @@ class _AddNotificationScreenState extends State<AddNotificationScreen>
                                       fontWeight: FontWeight.w300,
                                       letterSpacing: 3),
                                 ),
-                                onPressed: () {
+                                onPressed: () async {
                                   removeAllFocus();
-                                  _saveform(
-                                      currentUser['uid'], currentUser['name']);
+                                  await showDialog(
+                                    context: context,
+                                    builder: (ctx) => AlertDialog(
+                                      title: Text(
+                                        "Conform Or not",
+                                      ),
+                                      actions: <Widget>[
+                                        FlatButton(
+                                          onPressed: () {
+                                            Navigator.of(ctx).pop();
+                                            _saveform(currentUser['uid'],
+                                                currentUser['name']);
+                                          },
+                                          child: Text('Yes!'),
+                                        ),
+                                        FlatButton(
+                                          onPressed: () {
+                                            Navigator.of(ctx).pop();
+                                          },
+                                          child: Text('No'),
+                                        )
+                                      ],
+                                    ),
+                                  );
                                 }),
                           )
                   ],

@@ -24,7 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
           .contains(' no user record corresponding to this identifier')) {
         errormessage = 'User not Found !';
       } else if (error.toString().contains('password is invalid')) {
-        errormessage = 'Invalid email and Password';
+        errormessage = 'Invalid Password';
       } else if (error.toString().contains('email address is badly')) {
         errormessage = 'Invalid Email';
       }
@@ -38,12 +38,30 @@ class _LoginScreenState extends State<LoginScreen> {
     await showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('A error Occoured !!'),
-        content: Text(errorMessage),
+        title: Text(
+          "Error ",
+        ),
+        content: Row(
+          children: [
+            Icon(
+              Icons.error_outline,
+              color: Colors.orange,
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Text(
+              errorMessage,
+              style: TextStyle(
+                color: Colors.red,
+              ),
+            ),
+          ],
+        ),
         actions: <Widget>[
           FlatButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: Text('Ohky!'),
+            child: Text('Done'),
           )
         ],
       ),
