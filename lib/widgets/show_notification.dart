@@ -61,6 +61,10 @@ class _ShowNotificationState extends State<ShowNotification> {
       await launch(url);
     }
 
+    //for image link
+    final bool _isImageEmpty =
+        widget.data.imageUrl == 'EmptyImage' ? true : false;
+
     bool _showable = true;
     if (widget.filter) {
       if (widget.selectedFilter == a.FilterList.Current) {
@@ -109,10 +113,11 @@ class _ShowNotificationState extends State<ShowNotification> {
                             FlatButton(
                                 onPressed: () async {
                                   try {
+                                    Navigator.of(context).pop(true);
                                     await Provider.of<UtuNotification>(context,
                                             listen: false)
                                         .removeNotification(widget.data);
-                                    Navigator.of(context).pop(true);
+                                    //Navigator.of(context).pop(true);
                                   } catch (error) {
                                     await _showErrorDialog(error.toString());
                                     Navigator.of(context).pop(false);
@@ -236,6 +241,18 @@ class _ShowNotificationState extends State<ShowNotification> {
                                           ),
                                         ),
                                       if (!_isLinkEmpty)
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                      if (!_isImageEmpty)
+                                        Container(
+                                          padding: EdgeInsets.only(right: 15),
+                                          child: Image.network(
+                                            widget.data.imageUrl,
+                                            fit: BoxFit.fitWidth,
+                                          ),
+                                        ),
+                                      if (!_isImageEmpty)
                                         SizedBox(
                                           height: 10,
                                         ),

@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:utu_faculty/provider/faculty.dart';
+import 'package:utu_faculty/widgets/imagepicker.dart';
 import '../provider/notification.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart';
+import 'dart:io';
 
 class AddNotificationScreen extends StatefulWidget {
   static const routeName = '/addnotification';
@@ -25,11 +27,12 @@ class _AddNotificationScreenState extends State<AddNotificationScreen>
     'expiredate': '',
     'link': '',
   };
-
+  File _image;
   //this for update notification
   bool _argumentDataFatch = false;
   DateTime _oldSendDate;
   String _notificationID;
+  String _imageUrl;
   setdata(NotificationType data) {
     if (_argumentDataFatch == false) {
       _formData['title'] = data.title;
@@ -46,6 +49,8 @@ class _AddNotificationScreenState extends State<AddNotificationScreen>
       if (data.link != 'EmptyLink123') {
         _formData['link'] = data.link;
       }
+
+      _imageUrl = data.imageUrl;
       _argumentDataFatch = true;
     }
   }
@@ -145,6 +150,7 @@ class _AddNotificationScreenState extends State<AddNotificationScreen>
           userName: uName,
           expiredate: _formData['expiredate'],
           link: _formData['link'],
+          image: _image,
         );
       } else {
         await Provider.of<UtuNotification>(context, listen: false)
@@ -161,6 +167,8 @@ class _AddNotificationScreenState extends State<AddNotificationScreen>
           expiredate: _formData['expiredate'],
           link: _formData['link'],
           oldSendDate: _oldSendDate,
+          image: _image,
+          imageUrl: _imageUrl,
         );
       }
       setState(() {
@@ -318,6 +326,12 @@ class _AddNotificationScreenState extends State<AddNotificationScreen>
   void onSelectBatch(_value) {
     setState(() {
       _selectedBatch = _value;
+    });
+  }
+
+  void imgPickerFn(File pickedImage) {
+    setState(() {
+      _image = pickedImage;
     });
   }
 
@@ -630,6 +644,16 @@ class _AddNotificationScreenState extends State<AddNotificationScreen>
                     SizedBox(
                       height: 30,
                     ),
+                    if (_argumentDataFatch &&
+                        _image == null &&
+                        _imageUrl != null)
+                      Container(
+                          width: double.maxFinite,
+                          child: Image.network(
+                            _imageUrl,
+                            fit: BoxFit.fitWidth,
+                          )),
+                    ImagePicker(imgPickerFn, false),
                     _isloding
                         ? CircularProgressIndicator()
                         : Hero(
@@ -647,7 +671,7 @@ class _AddNotificationScreenState extends State<AddNotificationScreen>
                                   color: Colors.white,
                                 ),
                                 label: Text(
-                                  'Conform !',
+                                  'Confirm !',
                                   style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 18,
@@ -660,7 +684,7 @@ class _AddNotificationScreenState extends State<AddNotificationScreen>
                                     context: context,
                                     builder: (ctx) => AlertDialog(
                                       title: Text(
-                                        "Conform Or not",
+                                        "Confirm Or not",
                                       ),
                                       actions: <Widget>[
                                         FlatButton(

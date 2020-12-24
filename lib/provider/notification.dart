@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:io';
 //import './httpExeption.dart';
 //import 'package:utu_faculty/provider/utuNotificationType.dart';
 
@@ -27,6 +29,7 @@ class NotificationType {
   final String byid;
   final String by;
   final String link;
+  final String imageUrl;
   NotificationType({
     @required this.id,
     @required this.title,
@@ -37,6 +40,7 @@ class NotificationType {
     @required this.by,
     @required this.byid,
     @required this.link,
+    @required this.imageUrl,
   });
 }
 
@@ -52,12 +56,25 @@ class UtuNotification with ChangeNotifier {
     String userName,
     String expiredate,
     String link,
+    File image,
   }) async {
     try {
+      final DateTime datetime = DateTime.now();
+      var imgUrl = "EmptyImage";
+      if (image != null) {
+        final ref = FirebaseStorage.instance
+            .ref()
+            .child('Image')
+            .child(datetime.toString() + userid + '.jpg');
+        await ref.putFile(image).onComplete;
+        //image link
+        imgUrl = await ref.getDownloadURL();
+      }
+
       await Firestore.instance.collection('notification').add({
         'title': title,
         'description': description,
-        'datetime': DateTime.now().toIso8601String(),
+        'datetime': datetime.toIso8601String(),
         'by': userName,
         'byid': userid,
         'location': {
@@ -68,6 +85,7 @@ class UtuNotification with ChangeNotifier {
         },
         'expiredate': expiredate,
         'link': link,
+        'image': imgUrl,
       });
     } catch (error) {
       throw error;
@@ -87,8 +105,33 @@ class UtuNotification with ChangeNotifier {
     String expiredate,
     String link,
     DateTime oldSendDate,
+    File image,
+    String imageUrl,
   }) async {
     try {
+      if (image != null) {
+        print(imageUrl);
+        if (imageUrl == "EmptyImage") {
+          final ref = FirebaseStorage.instance
+              .ref()
+              .child('Image')
+              .child(oldSendDate.toString() + userid + '.jpg');
+          await ref.putFile(image).onComplete;
+          //image link
+          imageUrl = await ref.getDownloadURL();
+        } else {
+          final ref = FirebaseStorage.instance
+              .ref()
+              .child('Image')
+              .child(oldSendDate.toString() + userid + '.jpg');
+          await ref
+              .delete()
+              .whenComplete(() async => await ref.putFile(image).onComplete);
+          //await ref.putFile(image).onComplete;
+          //image link
+          imageUrl = await ref.getDownloadURL();
+        }
+      }
       await Firestore.instance
           .collection('notification')
           .document(id)
@@ -106,7 +149,9 @@ class UtuNotification with ChangeNotifier {
         },
         'expiredate': expiredate,
         'link': link,
-      });
+        'image': imageUrl,
+      }).then((value) =>
+              print("__________________________________Succes_______"));
     } catch (error) {
       throw error;
     }
@@ -157,7 +202,16 @@ class UtuNotification with ChangeNotifier {
 
   Future<void> removeNotification(NotificationType data) async {
     try {
-      Firestore.instance.collection('notification').document(data.id).delete();
+      await Firestore.instance
+          .collection('notification')
+          .document(data.id)
+          .delete();
+      if (data.imageUrl != "EmptyImage")
+        await FirebaseStorage.instance
+            .ref()
+            .child("Image")
+            .child(data.datetime.toString() + data.byid + ".jpg")
+            .delete();
     } catch (error) {
       throw error;
     }

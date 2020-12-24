@@ -380,6 +380,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             byid: data[index]['byid'],
                             expiredate: data[index]['expiredate'],
                             link: data[index]['link'],
+                            imageUrl: data[index]['image'],
                           ),
                         ),
                       ),
